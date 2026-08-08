@@ -8,6 +8,10 @@
  * 差出人・宛先ともに info@sei-ko.org を使用します。
  * 差出人を他ドメイン (gmail.com など) にすると SPF/DKIM が一致せず、
  * 迷惑メール扱いや配送拒否の原因になるため変更しないでください。
+ *
+ * メール送信のあと、控えとして Google スプレッドシートにも記録します
+ * (SHEET_ENDPOINT を設定した場合のみ)。ブラウザからではなくこの
+ * サーバーから送るので、.htaccess の CSP には影響しません。
  */
 
 declare(strict_types=1);
@@ -24,6 +28,13 @@ const ALLOWED_HOST = 'www.sei-ko.org';
 const MAX_NAME    = 100;
 const MAX_EMAIL   = 254;
 const MAX_MESSAGE = 5000;
+
+// 控えの記録先 (Google Apps Script のウェブアプリ URL)。
+// 空にすると記録処理を丸ごとスキップします。
+// SHEET_SECRET は Apps Script 側の SECRET と同じ値にしてください。
+const SHEET_ENDPOINT       = 'https://script.google.com/macros/s/AKfycbwQPv12e_f7JDm7srAWjv5i8s1gnZVsRbuLkSxTMdXOcBJ6quEZR3XqBI6oMd795TXE/exec';
+const SHEET_SECRET         = 'cb69e004d5117de842fb0926967cb18f5de744d0f56412ec';
+const SHEET_TIMEOUT_SECONDS = 5;
 
 // UTF-8 のまま送る (Japanese を指定すると ISO-2022-JP に変換される)
 mb_internal_encoding('UTF-8');
@@ -74,6 +85,101 @@ function isSameOrigin(): bool
     $selfHost = strtok((string)($_SERVER['HTTP_HOST'] ?? ''), ':');
 
     return $host === ALLOWED_HOST || ($selfHost !== false && $host === $selfHost);
+}
+
+/**
+ * 控えを Google スプレッドシートへ記録する
+ *
+ * メールが届かなかった場合の保険なので、失敗しても利用者への応答は
+ * 変えません。原因を追えるようにログだけ残します。
+ *
+ * cURL を優先し、失敗した場合はストリームで再試行します。CA 証明書の
+ * 設定など環境差でどちらか一方が使えないことがあるためです。
+ *
+ * @param array<string, string> $fields 送信する項目
+ */
+function forwardToSheet(array $fields): void
+{
+    if (SHEET_ENDPOINT === '') {
+        return;
+    }
+
+    $body = http_build_query($fields + ['secret' => SHEET_SECRET]);
+
+    $curlError = postWithCurl($body);
+    if ($curlError === null) {
+        return;
+    }
+
+    $streamError = postWithStream($body);
+    if ($streamError === null) {
+        error_log('contact.php: sheet forward recovered by stream (curl: ' . $curlError . ')');
+        return;
+    }
+
+    error_log(sprintf('contact.php: sheet forward failed (curl: %s / stream: %s)', $curlError, $streamError));
+}
+
+/**
+ * cURL で POST する
+ *
+ * @return string|null 成功なら null、失敗なら理由
+ */
+function postWithCurl(string $body): ?string
+{
+    if (!function_exists('curl_init')) {
+        return 'not available';
+    }
+
+    $curl = curl_init(SHEET_ENDPOINT);
+    curl_setopt_array($curl, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $body,
+        CURLOPT_RETURNTRANSFER => true,
+        // Apps Script は googleusercontent.com へ 302 で転送する
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT        => SHEET_TIMEOUT_SECONDS,
+        CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
+    ]);
+
+    $response = curl_exec($curl);
+    $status   = (int)curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+    $error    = curl_error($curl);
+    curl_close($curl);
+
+    if ($response === false) {
+        return $error !== '' ? $error : 'request failed';
+    }
+
+    if ($status >= 400) {
+        return 'status ' . $status;
+    }
+
+    return null;
+}
+
+/**
+ * ストリーム (file_get_contents) で POST する
+ *
+ * @return string|null 成功なら null、失敗なら理由
+ */
+function postWithStream(string $body): ?string
+{
+    if (!ini_get('allow_url_fopen')) {
+        return 'allow_url_fopen disabled';
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content'       => $body,
+            'timeout'       => SHEET_TIMEOUT_SECONDS,
+            'ignore_errors' => true,
+        ],
+    ]);
+
+    return @file_get_contents(SHEET_ENDPOINT, false, $context) === false ? 'request failed' : null;
 }
 
 // =============================================================================
@@ -137,7 +243,17 @@ $headers = [
     'Reply-To' => $email,
 ];
 
-$sent = mb_send_mail(MAIL_TO, MAIL_SUBJECT, $body, $headers, '-f' . MAIL_FROM);
+// 警告が出力に混ざると JSON が壊れるため抑止する (失敗は下でログに残す)
+$sent = @mb_send_mail(MAIL_TO, MAIL_SUBJECT, $body, $headers, '-f' . MAIL_FROM);
+
+// メールが失敗したときこそ控えが要るので、結果によらず記録する
+forwardToSheet([
+    'sent_at' => $sentAt,
+    'name'    => $name,
+    'email'   => $email,
+    'message' => $message,
+    'mailed'  => $sent ? 'OK' : 'FAILED',
+]);
 
 if (!$sent) {
     error_log('contact.php: mb_send_mail failed');
