@@ -295,7 +295,7 @@ function initReadinessForm() {
 // =============================================================================
 
 /**
- * 相談内容をフォーム送信サービス (Formspree) へ非同期でPOSTする
+ * 相談内容を同一サーバーの contact.php へ非同期でPOSTする
  * ページ遷移を伴わず、同じ画面で結果を返す
  */
 function initContactForm() {
@@ -304,6 +304,8 @@ function initContactForm() {
 
   const button = form.querySelector('button[type="submit"]');
   const status = form.querySelector('.form-success');
+
+  const FALLBACK_ERROR = '送信できませんでした。お手数ですが、時間をおいて再度お試しください。';
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -318,13 +320,20 @@ function initContactForm() {
         headers: { 'Accept': 'application/json' }
       });
 
-      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+      // 入力不備などはサーバー側のメッセージをそのまま利用者に見せる
+      const result = await response.json().catch(() => ({}));
 
-      status.textContent = '送信しました。内容を確認のうえ、折り返しご連絡します。';
-      form.reset();
+      status.textContent = result.message || (response.ok ? '送信しました。' : FALLBACK_ERROR);
+
+      if (response.ok) {
+        form.reset();
+      } else {
+        status.classList.add('is-error');
+      }
     } catch (error) {
+      // 通信自体に失敗した場合 (オフライン等)
       console.error(error);
-      status.textContent = '送信できませんでした。お手数ですが、時間をおいて再度お試しください。';
+      status.textContent = FALLBACK_ERROR;
       status.classList.add('is-error');
     } finally {
       status.classList.add('show');
