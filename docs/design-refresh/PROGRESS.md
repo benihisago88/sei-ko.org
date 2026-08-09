@@ -35,7 +35,7 @@
 | 3 | ヒーロー画像の軽量化 | 未着手 |
 | 4 | 運営者セクション新設 | 未着手 |
 | 5 | USE CASES タブ別ビジュアル | 未着手 |
-| 6 | guide.html 強化 | 未着手 |
+| 6 | guide.html 強化 | 完了 |
 | 7 | 仕上げと全体検証 | 未着手 |
 
 > フェーズ完了時、この表の状態も更新すること。
@@ -131,6 +131,33 @@
   - 「担」はSIL Open Font LicenseのNoto Sans JP 700（`@fontsource/noto-sans-jp`のWOFFサブセット）から取得し、SVGのpathデータとしてのみ配置。フォントファイルはリポジトリに含めていない
   - 512px用の別SVGは使っていない。通常アイコンは64pxの元SVGを高密度でラスタライズしたもの
   - アイコンを再変更する場合は`?v=20260809.2`から連番を上げ、4ページとmanifestを同時更新すること
+- **スコープ外で気づいた点**: なし
+
+### Phase 6: OGP画像の刷新と guide.html の図解追加
+
+- **状態**: 完了
+- **日付**: 2026-08-09
+- **キャッシュバスター**: ogp.jpg / ogp-guide.jpg / styles.css `?v=20260809.3`
+- **変更ファイル**:
+  - `assets/ogp.jpg` — 現行サイトのヒーローと揃う白地・濃紺文字・シアン強調・右側の丸み写真のOGPへ差し替え
+  - `index.html` / `privacy.html` — og:imageとtwitter:imageのキャッシュバスター、画像内容に合うog:image:altを更新
+  - `guide.html` — 専用OGP参照とaltへ更新し、目次直後にアクセシブルな縦型5ステップフロー図を追加
+  - `404.html` — styles.cssのキャッシュバスターを4ページと同じ値へ更新
+  - `styles.css` — `.article-flow`の表示スタイルを追加
+- **新規ファイル**:
+  - `assets/ogp-guide.jpg` — 1200×630 / 68,908 bytes
+- **ユーザー確認の結果**:
+  - 「初回相談無料」バッジ: 削除
+  - OGP画像の承認: 得た（濃紺ベタ案を取り下げ、現行ヒーローと整合する白地案を採用）
+- **検証結果**:
+  - `assets/ogp.jpg` = 1200×630 / 62,941 bytes、`assets/ogp-guide.jpg` = 1200×630 / 68,908 bytes。両画像を目視し、日本語の欠落・旧ブランド表記・黄緑バッジ・廃止色がないことを確認
+  - ローカル `python -m http.server 8777` とChromiumで `/` / `/guide.html` / `/privacy.html` / `/404.html` を375px / 768px / 1280pxで確認。全12画面が200、横スクロール・コンソールerror/warning・失敗リクエストなし
+  - フロー図は全幅で320×560px、`role="img"`と5ステップを含むアクセシブル名を確認。Chrome Accessibilityツリーでもimageロールと名称を確認
+  - OGP参照先・alt・1200/630メタデータ、4ページのstyles.cssクエリ同値、インラインstyleなし、リポジトリ内のpackage.json/node_modulesなし、`git diff --check`を確認
+  - 公開中の `/` と `/guide.html` はCSP維持をHTTPヘッダで確認。SNS実表示は未検証（本番反映後に要確認）
+- **次フェーズへの申し送り**:
+  - `404.html` にはOGPタグ自体がない。Phase 7で追加するか判断すること
+  - 本番反映後、X Card ValidatorおよびFacebook Sharing Debuggerでキャッシュを再取得してSNS表示を確認すること
 - **スコープ外で気づいた点**: なし
 
 ---

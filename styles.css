@@ -1845,6 +1845,18 @@ footer {
   line-height: 2;
 }
 
+.article-flow {
+  max-width: 320px;
+  margin: 32px auto;
+  color: #1fa6ba;
+}
+
+.article-flow svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .article-content {
   max-width: 760px;
 }
