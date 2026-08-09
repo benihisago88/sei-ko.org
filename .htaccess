@@ -6,6 +6,13 @@ DirectoryIndex index.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # 作業用ドキュメントと連携スクリプトは公開しない。
+  RewriteRule ^(?:docs|tools)/ - [F,L]
+
+  # ルート直下の Markdown（CLAUDE.md など作業用メモ）も公開しない。
+  RewriteRule \.md$ - [F,L]
+
   # www なし（apex）へのアクセスを www ありに 301 で集約する。
   RewriteCond %{HTTP_HOST} ^sei-ko\.org$ [NC]
   RewriteRule ^(.*)$ https://www.sei-ko.org/$1 [R=301,L]

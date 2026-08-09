@@ -312,7 +312,7 @@ nav a:hover {
 
 .button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px #0e3d3824;
+  box-shadow: 0 10px 20px #11153f24;
 }
 
 .button.primary {
@@ -1301,7 +1301,7 @@ footer {
 }
 
 .footer-inner .brand-dot {
-  color: #d7ee87;
+  color: #47c4d0;
 }
 
 .footer-inner p {
