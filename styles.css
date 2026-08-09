@@ -550,8 +550,13 @@ nav a:hover {
   place-items: center;
   border: 1px solid #9edbe2;
   border-radius: 50%;
-  font-size: 20px;
   color: #1fa6ba;
+}
+
+/* アイコンSVGのサイズはここで制御する（SVG側に width/height を書かない） */
+.service-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 .service-card h3 {
