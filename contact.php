@@ -161,6 +161,9 @@ function postWithCurl(string $body): ?string
 /**
  * ストリーム (file_get_contents) で POST する
  *
+ * cURL が使えない環境向けのフォールバック。
+ * ignore_errors を有効にし、戻り値と error_get_last() の両方で成否を判定する。
+ *
  * @return string|null 成功なら null、失敗なら理由
  */
 function postWithStream(string $body): ?string
@@ -179,7 +182,16 @@ function postWithStream(string $body): ?string
         ],
     ]);
 
-    return @file_get_contents(SHEET_ENDPOINT, false, $context) === false ? 'request failed' : null;
+    // 警告を抑制しつつ、失敗時は error_get_last() で詳細を取得する
+    $result = @file_get_contents(SHEET_ENDPOINT, false, $context);
+
+    if ($result === false) {
+        $lastError = error_get_last();
+        $detail = $lastError['message'] ?? 'unknown stream error';
+        return 'request failed: ' . $detail;
+    }
+
+    return null;
 }
 
 // =============================================================================
