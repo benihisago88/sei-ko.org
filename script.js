@@ -39,7 +39,7 @@ const CONFIG = {
 
 /**
  * 分野別ケースデータ
- * 各ケースには番号、タイプ、タイトル、説明、メトリクス、引用、ビジュアルテキストを含む
+ * 各ケースには番号、タイプ、タイトル、説明、メトリクス、引用、ビジュアルテキスト、図解を含む
  */
 const CASE_DATA = {
   web: {
@@ -51,7 +51,8 @@ const CASE_DATA = {
     metric: 'SPOT',
     metricLabel: '<span class="nobr">必要な箇所だけ</span><br class="pc-only"><span class="nobr">小さく直す</span>',
     quote: '全面リニューアルありきではなく、いま困っている箇所から手をつけます。',
-    visual: '<span class="nobr">直したい場所だけ、</span><br class="pc-only"><span class="nobr">すぐ直せる状態に。</span>'
+    visual: '<span class="nobr">直したい場所だけ、</span><br class="pc-only"><span class="nobr">すぐ直せる状態に。</span>',
+    figure: '<svg viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="43" y="47" width="234" height="146" rx="8" /><path d="M43 79h234M62 63h.5M75 63h.5M88 63h.5" /><path d="M69 105h69M69 122h48M69 139h55" /><rect x="154" y="101" width="82" height="55" rx="5" /><path d="M178 169l14-17 11 10 10-27 14 22" /><path d="M197 109l18 18-9 2-4 10-5-5-8 8z" /></svg>'
   },
   ec: {
     no: '02',
@@ -62,7 +63,8 @@ const CASE_DATA = {
     metric: 'SETUP',
     metricLabel: '<span class="nobr">開店準備から</span><br class="pc-only"><span class="nobr">日々の運用まで</span>',
     quote: '止まっている設定を先に片づけてから、売り方の改善に進みます。',
-    visual: '<span class="nobr">開店も運用も、</span><br class="pc-only"><span class="nobr">つまずかずに進む。</span>'
+    visual: '<span class="nobr">開店も運用も、</span><br class="pc-only"><span class="nobr">つまずかずに進む。</span>',
+    figure: '<svg viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M48 123h48M116 123h38M202 123h38" /><path d="m96 115 8 8-8 8M192 115l8 8-8 8M278 115l8 8-8 8" /><rect x="28" y="91" width="40" height="40" rx="5" /><path d="m37 91 11-14 11 14M38 110h20" /><path d="M124 103h42l8 28h-58zM135 103l5-12h10l5 12" /><rect x="210" y="98" width="42" height="30" rx="4" /><path d="M218 109h26M218 119h12" /><path d="m271 112 10 10 19-22" /></svg>'
   },
   ai: {
     no: '03',
@@ -73,7 +75,8 @@ const CASE_DATA = {
     metric: 'REVIEW',
     metricLabel: '<span class="nobr">最終確認は</span><br class="pc-only"><span class="nobr">必ず人が行う</span>',
     quote: 'AIの出力をそのまま使わず、判断が必要な部分は人が確認します。',
-    visual: '<span class="nobr">定型作業を、</span><br class="pc-only"><span class="nobr">もっと軽くする。</span>'
+    visual: '<span class="nobr">定型作業を、</span><br class="pc-only"><span class="nobr">もっと軽くする。</span>',
+    figure: '<svg viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="40" y="73" width="58" height="24" rx="4" /><rect x="40" y="108" width="58" height="24" rx="4" /><rect x="40" y="143" width="58" height="24" rx="4" /><path d="M112 85h34M112 120h34M112 155h34M146 85l25 35-25 35zM171 120h36" /><circle cx="234" cy="91" r="20" /><path d="M202 166c5-25 19-37 32-37s27 12 32 37M224 91l7 7 12-14" /><path d="m267 161 8 8 15-18" /></svg>'
   }
 };
 
@@ -92,6 +95,7 @@ const elements = {
   caseMetricLabel: document.querySelector('#caseMetricLabel'),
   caseQuote: document.querySelector('#caseQuote'),
   caseVisualText: document.querySelector('#caseVisualText'),
+  caseFigure: document.querySelector('#caseFigure'),
   caseBadge: document.querySelector('#caseBadge'),
   readinessForm: document.querySelector('#readinessForm'),
   readinessResult: document.querySelector('#result-area'),
@@ -126,6 +130,7 @@ function updateCaseContent(data) {
   elements.caseMetricLabel.innerHTML = data.metricLabel;
   elements.caseQuote.textContent = data.quote;
   elements.caseVisualText.innerHTML = data.visual;
+  elements.caseFigure.innerHTML = data.figure;
   elements.caseBadge.textContent = data.badge;
 }
 

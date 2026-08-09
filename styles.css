@@ -778,65 +778,27 @@ nav a:hover {
   margin: 0;
 }
 
-.blueprint {
-  width: 235px;
-  height: 210px;
+.case-figure {
   position: absolute;
-  bottom: 10px;
-  left: 30%;
-  border-left: 2px solid #55bfc9;
-  border-bottom: 2px solid #55bfc9;
-  transform: skewY(-8deg);
-  opacity: 0.9;
+  top: 50%;
+  left: 50%;
+  width: min(76%, 300px);
+  transform: translate(-50%, -45%);
+  color: #107a91;
 }
 
-.blueprint b {
+.case-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.case-visual > b {
   position: absolute;
   right: 30px;
   top: 78px;
   color: #107a91;
   font: 500 44px Georgia, serif;
-}
-
-.bp-line {
-  position: absolute;
-  border-top: 1px solid #86b89e;
-}
-
-.l1 {
-  width: 165px;
-  top: 55px;
-  left: 0;
-}
-
-.l2 {
-  width: 183px;
-  top: 124px;
-  left: 0;
-}
-
-.l3 {
-  height: 185px;
-  border-left: 1px solid #86b89e;
-  left: 103px;
-  top: 0;
-}
-
-.bp-square {
-  position: absolute;
-  width: 42px;
-  height: 42px;
-  border: 1px solid #86b89e;
-}
-
-.s1 {
-  top: 9px;
-  left: 45px;
-}
-
-.s2 {
-  bottom: 20px;
-  right: 19px;
 }
 
 .visual-caption {
@@ -938,8 +900,8 @@ nav a:hover {
 
 .timeline li {
   display: grid;
-  grid-template-columns: 44px 1fr auto;
-  gap: 18px;
+  grid-template-columns: 44px 28px 1fr auto;
+  gap: 14px;
   border-top: 1px solid #dbe6e8;
   padding: 20px 0 21px;
   align-items: start;
@@ -949,7 +911,7 @@ nav a:hover {
   border-bottom: 1px solid #dbe6e8;
 }
 
-.timeline li > span {
+.timeline-number {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -958,6 +920,13 @@ nav a:hover {
   background: #d9f3f5;
   color: #168ca0;
   font: 12px var(--mono);
+}
+
+.timeline-icon {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  color: #168ca0;
 }
 
 .timeline h3 {
@@ -1028,6 +997,24 @@ nav a:hover {
   padding: 26px 25px;
   min-height: 285px;
   position: relative;
+}
+
+.price-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  left: -1px;
+  height: 4px;
+  background: var(--lime);
+}
+
+.price-card.featured::before {
+  background: var(--ink);
+}
+
+.price-card.continuous::before {
+  background: var(--cream);
 }
 
 .price-card.featured {
@@ -1536,6 +1523,18 @@ footer {
     height: 260px;
   }
 
+  .case-figure {
+    left: 42%;
+    width: min(72%, 280px);
+    transform: translate(-50%, -56%);
+  }
+
+  .case-visual > b {
+    right: 22px;
+    top: 70px;
+    font-size: 36px;
+  }
+
   .case-content {
     padding: 29px 24px;
   }
@@ -1561,11 +1560,12 @@ footer {
   }
 
   .timeline li {
-    grid-template-columns: 36px 1fr;
+    grid-template-columns: 36px 28px 1fr;
+    gap: 12px;
   }
 
   .timeline li > b {
-    grid-column: 2;
+    grid-column: 3;
   }
 
   .contact-inner {
