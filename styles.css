@@ -2054,3 +2054,50 @@ footer {
     font-size: 24px;
   }
 }
+
+/* ==========================================================================
+   パンくずリスト
+   ========================================================================== */
+.breadcrumb {
+  font-size: 13px;
+  color: #63758a;
+  margin-bottom: 24px;
+}
+
+.breadcrumb ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "/";
+  color: #9ab0c5;
+  font-size: 12px;
+}
+
+.breadcrumb a {
+  color: #35bfd2;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+  color: #11153f;
+  text-decoration: underline;
+}
+
+.breadcrumb [aria-current="page"] {
+  color: #334155;
+  font-weight: 500;
+}

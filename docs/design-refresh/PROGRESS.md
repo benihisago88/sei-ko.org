@@ -260,6 +260,21 @@
   - Google Search Consoleでファビコンの再クロールを待つ
 - **スコープ外で気づいた点**: 既存配色のLighthouse `color-contrast` 指摘は、個別の配色レビューとして扱う。
 
+### SEO: テクニカルSEO・構造化データ・パンくずリスト追加
+
+- **状態**: 完了
+- **日付**: 2026-08-10
+- **キャッシュバスター**: styles.css `?v=20260810.1`（4ページ統一）
+- **変更ファイル**:
+  - `styles.css` — `.breadcrumb`（パンくずナビゲーション）のスタイル定義を追加
+  - `guide.html` — `BreadcrumbList` 構造化データ、`Article` 画像・Publisherメタ拡張、HTMLパンくずナビゲーションを追加
+  - `index.html` — `ProfessionalService` JSON-LDに `priceRange`, `knowsAbout` などを追加、個別の `Service` 構造化データを新設
+  - `privacy.html` / `404.html` — `styles.css` キャッシュバスターを `?v=20260810.1` へ同時更新
+  - `sitemap.xml` — `<lastmod>` を `2026-08-10` に更新
+- **検証結果**:
+  - `python -m http.server 8777` にて `/` / `guide.html` / `privacy.html` / `404.html` / `sitemap.xml` 全5レスポンスが 200 OK
+  - `index.html`（4ブロック）、`guide.html`（2ブロック）の JSON-LD 構造化データの構文検証（VALID確認済み）
+
 ## 総括
 
 | Phase | 内容 | 状態 |
