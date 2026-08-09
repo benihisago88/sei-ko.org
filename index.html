@@ -35,7 +35,7 @@
     media="(min-width: 481px) and (max-width: 800px)" />
   <link rel="preload" href="assets/hero-consultation-pc-1303.webp" as="image" type="image/webp"
     media="(min-width: 801px)" />
-  <link rel="stylesheet" href="styles.css?v=20260808.2" />
+  <link rel="stylesheet" href="styles.css?v=20260809.1" />
   <script
     type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"デジタル担当室（運営：誠幸）","description":"小規模事業者・個人事業主向けに、WEB制作・Shopify/EC・AI活用・業務効率化を全国オンラインで支援する外部デジタル担当","areaServed":{"@type":"Country","name":"日本"},"serviceType":["WEB制作","Shopify・EC構築","AI活用支援","業務効率化コンサルティング","デジタル運用サポート"],"url":"https://www.sei-ko.org/","availableLanguage":"ja"}</script>
   <script
@@ -446,18 +446,18 @@
             <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
           </p>
           <label for="contact-name">お名前（必須）
-            <input id="contact-name" name="name" type="text" autocomplete="name" placeholder="山田 花子" required />
+            <input id="contact-name" name="name" type="text" autocomplete="name" placeholder="山田 花子" maxlength="100" required />
           </label>
           <label for="contact-email">メールアドレス（必須）
             <input id="contact-email" name="email" type="email" autocomplete="email" placeholder="example@company.jp"
-              required />
+              maxlength="254" required />
           </label>
           <label for="contact-message">ご相談内容（必須）
             <textarea id="contact-message" name="message" rows="6" placeholder="困っていること、今の状況、やりたいことなどをそのままお書きください。"
-              required></textarea>
+              maxlength="5000" required></textarea>
           </label>
           <button class="button primary" type="submit">相談内容を送る <span>→</span></button>
-          <p class="form-note">送信をもって、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
+          <p class="form-note">送信をもって、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。通常2営業日以内にご返信します。</p>
           <p class="form-success" role="status" aria-live="polite"></p>
         </form>
       </div>
