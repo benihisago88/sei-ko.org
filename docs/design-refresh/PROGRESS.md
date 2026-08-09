@@ -30,7 +30,7 @@
 | Phase | 内容 | 状態 |
 |---|---|---|
 | 0 | ブランド色の一元化 | 完了 |
-| 1 | ファビコン一式の刷新 | 未着手 |
+| 1 | ファビコン一式の刷新 | 完了 |
 | 2 | サービスアイコンSVG化 | 未着手 |
 | 3 | ヒーロー画像の軽量化 | 未着手 |
 | 4 | 運営者セクション新設 | 未着手 |
@@ -101,6 +101,37 @@
 - **スコープ外で気づいた点**:
   - `footer { color: #b4c6bc }`（`styles.css:1273`）は緑がかったグレー。旧ブランドの名残の可能性があるが、指定された廃止色3つには含まれないため未変更
   - `styles.css` には `--pine` が `--ink` と同値で残っている。整理は差分が広がるため見送り
+
+### Phase 1: ファビコン／アプリアイコン一式の刷新
+
+- **状態**: 完了
+- **日付**: 2026-08-09
+- **キャッシュバスター**: アイコン系 `?v=20260809.2`（4ページ + manifest で統一）
+- **採用した図柄**: 案A（「担」そのまま）。16px / 32px / 48pxの実寸比較を提示し、ユーザーが案Aを選択。
+- **変更ファイル**:
+  - `favicon.svg` — 真円の濃紺背景に白い「担」のアウトラインを配置し、aria-labelを「デジタル担当室」に更新
+  - `apple-touch-icon.png` / `icon-192.png` / `icon-512.png` — 新図柄で再生成
+  - `site.webmanifest` — iconsを4エントリ（any×2 / maskable×2）にし、全参照を新キャッシュバスターへ更新
+  - `index.html` / `guide.html` / `privacy.html` / `404.html` — ico → SVG → apple-touch-icon → manifestの4行に統一
+- **新規ファイル**:
+  - `favicon.ico` — 16px / 32px / 48pxを内包
+  - `icon-maskable-192.png` / `icon-maskable-512.png` — フルブリード濃紺背景のmaskableアイコン
+- **削除ファイル**:
+  - `favicon-32.png` — favicon.icoへ統合。削除前後とも参照0件を確認
+- **検証結果**:
+  - sharpでapple-touch-icon 180×180・透過なし、通常/ maskable各192×192・512×512を確認
+  - favicon.icoは3画像（16×16 / 32×32 / 48×48）を内包していることを確認
+  - favicon.svgに`<text>`がなく、aria-labelが現ブランド名であることを確認
+  - maskable画像の四隅が`#11153f`のフルブリード背景であることをピクセル値で確認。中央の「担」は幅約41%で、60%以内
+  - 4ページのアイコン宣言は各4行・同一順序・同一値であること、manifestのpurposeはany×2 / maskable×2、theme_colorは`#11153f`であることを確認
+  - ローカルサーバーでアイコン/manifestの8ファイルがすべて200。実ブラウザで4ページを開き、コンソールのerror/warning 0件、375px / 768px / 1280pxで横スクロールなしを確認
+  - Chrome DevToolsのApplication画面での「minimum safe area」手動表示は、この環境では操作できないため未実施。上記の生成時セーフゾーン寸法・ピクセル値で代替確認
+  - リポジトリ直下の`package.json` / `node_modules`が存在しないこと、`git diff --check`が通ることを確認
+- **次フェーズへの申し送り**:
+  - 「担」はSIL Open Font LicenseのNoto Sans JP 700（`@fontsource/noto-sans-jp`のWOFFサブセット）から取得し、SVGのpathデータとしてのみ配置。フォントファイルはリポジトリに含めていない
+  - 512px用の別SVGは使っていない。通常アイコンは64pxの元SVGを高密度でラスタライズしたもの
+  - アイコンを再変更する場合は`?v=20260809.2`から連番を上げ、4ページとmanifestを同時更新すること
+- **スコープ外で気づいた点**: なし
 
 ---
 
