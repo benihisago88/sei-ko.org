@@ -273,7 +273,19 @@
   - `sitemap.xml` — `<lastmod>` を `2026-08-10` に更新
 - **検証結果**:
   - `python -m http.server 8777` にて `/` / `guide.html` / `privacy.html` / `404.html` / `sitemap.xml` 全5レスポンスが 200 OK
-  - `index.html`（4ブロック）、`guide.html`（2ブロック）の JSON-LD 構造化データの構文検証（VALID確認済み）
+### REFACTOR: コードの可読性向上とリファクタリング
+
+- **状態**: 完了
+- **日付**: 2026-08-10
+- **キャッシュバスター**: script.js `?v=20260810.2` (index.html)
+- **変更ファイル**:
+  - `script.js` — 変数・関数名を具体的な名前に変更、早期リターン導入、Why（設計意図）重視のコメント拡充
+  - `index.html` — script.js キャッシュバスター更新、casePanelへのrole/tabindex静的付与
+- **検証結果**:
+  - `node --check script.js` にて構文エラーなしを確認
+  - ローカルサーバー `python -m http.server 8777` にて index.html / script.js が 200 OK であることを確認
+- **次フェーズへの申し送り**: なし
+- **スコープ外で気づいた点**: なし
 
 ## 総括
 

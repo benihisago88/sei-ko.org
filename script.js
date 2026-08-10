@@ -2,44 +2,47 @@
  * デジタル担当室 - メインスクリプト
  *
  * 構成:
- * - 定数定義 (CONFIG, CASE_DATA)
- * - DOM要素の参照
- * - 分野別ケース切り替え機能
- * - スクロールアニメーション
- * - お問い合わせフォーム送信
- * - 準備度診断フォーム
- * - モバイルナビゲーション
+ * - 動作設定 (APP_CONFIG)
+ * - 分野別ケースデータ (CASE_DATA)
+ * - DOM要素の集約参照 (uiElements)
+ * - 各機能の初期化ルーチン
  */
 
 // =============================================================================
-// 定数定義 - マジックナンバーを排除し、意図を明確にする
+// 動作設定
 // =============================================================================
 
-const CONFIG = {
-  // アニメーション
+const APP_CONFIG = {
+  // 視覚的なフィードバックの速度
   FADE_DURATION_MS: 160,
+  
+  // スクロール時に要素を表示する閾値（14%見えたら表示）
   INTERSECTION_THRESHOLD: 0.14,
 
-  // 準備度診断のスコア閾値
-  READINESS_SCORE: {
-    LOW: 2,    // 困りごとの整理から始める段階
-    MEDIUM: 4  // 小さな改善を始めやすい状態
+  // 準備度診断のスコア判定基準
+  // 3つの質問（各0〜2点）の合計点に基づき、事業主のデジタル準備状態を分類する
+  READINESS_LEVELS: {
+    START_ORGANIZING: 2, // 困りごとの整理から始める段階
+    SMALL_START: 4       // スポット対応から着手できる段階
   },
 
-  // フォームフィールド名
-  READINESS_FIELDS: ['q1', 'q2', 'q3'],
-
-  // スコア変換マップ (a:2点, b:1点, c:0点)
-  SCORE_MAP: {
+  // フォームの選択肢とスコアの紐付け
+  // a:前向き・具体性あり(2), b:検討中(1), c:不明・未着手(0)
+  ANSWER_SCORE_WEIGHTS: {
     'a': 2,
     'b': 1,
     'c': 0
   }
 };
 
+// =============================================================================
+// 分野別ケースデータ
+// =============================================================================
+
 /**
- * 分野別ケースデータ
- * 各ケースには番号、タイプ、タイトル、説明、メトリクス、引用、ビジュアルテキスト、図解を含む
+ * WEB / EC / AI の各サポート事例データ
+ * index.html の活用事例セクションで動的に切り替えて表示する。
+ * 図解 (figure) はインラインSVGを直接保持し、CSP違反を避けつつ動的更新を可能にしている。
  */
 const CASE_DATA = {
   web: {
@@ -81,10 +84,15 @@ const CASE_DATA = {
 };
 
 // =============================================================================
-// DOM要素の参照 - 一度だけ取得し、再利用する
+// DOM要素の集約参照
 // =============================================================================
 
-const elements = {
+/**
+ * 頻繁にアクセスするDOM要素をキャッシュし、パフォーマンスを向上させる。
+ * また、要素の取得を1箇所にまとめることでメンテナンス性を高めている。
+ */
+const uiElements = {
+  // 事例切り替え用パネル
   casePanel: document.querySelector('#casePanel'),
   caseTabs: [...document.querySelectorAll('[data-case]')],
   caseNo: document.querySelector('#caseNo'),
@@ -97,10 +105,17 @@ const elements = {
   caseVisualText: document.querySelector('#caseVisualText'),
   caseFigure: document.querySelector('#caseFigure'),
   caseBadge: document.querySelector('#caseBadge'),
+  
+  // 準備度診断フォーム
   readinessForm: document.querySelector('#readinessForm'),
-  readinessResult: document.querySelector('#result-area'),
-  readinessText: document.querySelector('#result-text'),
-  contactForm: document.querySelector('.contact-form')
+  readinessResultArea: document.querySelector('#result-area'),
+  readinessResultText: document.querySelector('#result-text'),
+  
+  // お問い合わせフォーム
+  contactForm: document.querySelector('.contact-form'),
+  
+  // モバイルナビゲーション
+  mobileNavLinks: document.querySelectorAll('.mobile-nav a')
 };
 
 // =============================================================================
@@ -108,39 +123,38 @@ const elements = {
 // =============================================================================
 
 /**
- * ケースパネルの初期化
- * アクセシビリティ属性を設定
+ * 事例パネルの遷移アニメーション設定
+ * 視覚的負荷を抑えるため、フェード効果の時間を設定から取得して適用する。
  */
-function initCasePanel() {
-  elements.casePanel.setAttribute('role', 'tabpanel');
-  elements.casePanel.tabIndex = 0;
-  elements.casePanel.style.transition = `opacity ${CONFIG.FADE_DURATION_MS}ms ease`;
+function setupCasePanelTransitions() {
+  if (!uiElements.casePanel) return;
+  uiElements.casePanel.style.transition = `opacity ${APP_CONFIG.FADE_DURATION_MS}ms ease`;
 }
 
 /**
- * ケースデータをDOMに反映
- * @param {Object} data - CASE_DATAのいずれかのオブジェクト
+ * 表示されている事例内容を更新する
+ * テンプレートエンジンの代わりに innerHTML/textContent を使い分け、
+ * 静的サイトとしてのシンプルさを保ちつつ動的な切り替えを実現している。
  */
-function updateCaseContent(data) {
-  elements.caseNo.textContent = data.no;
-  elements.caseType.textContent = data.type;
-  elements.caseTitle.innerHTML = data.title;
-  elements.caseDesc.textContent = data.desc;
-  elements.caseMetric.textContent = data.metric;
-  elements.caseMetricLabel.innerHTML = data.metricLabel;
-  elements.caseQuote.textContent = data.quote;
-  elements.caseVisualText.innerHTML = data.visual;
-  elements.caseFigure.innerHTML = data.figure;
-  elements.caseBadge.textContent = data.badge;
+function applyCaseDataToView(caseData) {
+  uiElements.caseNo.textContent = caseData.no;
+  uiElements.caseType.textContent = caseData.type;
+  uiElements.caseTitle.innerHTML = caseData.title;
+  uiElements.caseDesc.textContent = caseData.desc;
+  uiElements.caseMetric.textContent = caseData.metric;
+  uiElements.caseMetricLabel.innerHTML = caseData.metricLabel;
+  uiElements.caseQuote.textContent = caseData.quote;
+  uiElements.caseVisualText.innerHTML = caseData.visual;
+  uiElements.caseFigure.innerHTML = caseData.figure;
+  uiElements.caseBadge.textContent = caseData.badge;
 }
 
 /**
- * タブの選択状態を更新
- * @param {HTMLElement} activeButton - 選択されたタブボタン
+ * タブの選択状態（WAI-ARIA属性含む）を更新する
  */
-function updateTabSelection(activeButton) {
-  elements.caseTabs.forEach(tab => {
-    const isSelected = tab === activeButton;
+function refreshTabStates(selectedButton) {
+  uiElements.caseTabs.forEach(tab => {
+    const isSelected = tab === selectedButton;
     tab.classList.toggle('active', isSelected);
     tab.setAttribute('aria-selected', String(isSelected));
     tab.tabIndex = isSelected ? 0 : -1;
@@ -148,150 +162,150 @@ function updateTabSelection(activeButton) {
 }
 
 /**
- * ケースをアクティブにする
- * フェードアウト → 内容更新 → フェードイン
- * @param {HTMLElement} button - クリックされたタブボタン
+ * 事例パネルの内容を切り替える
+ * 急激な画面変化による不快感を防ぐため、一旦透明にしてから内容を書き換え、再度表示する。
  */
-function activateCase(button) {
-  const data = CASE_DATA[button.dataset.case];
+function switchActiveCase(targetButton) {
+  const caseKey = targetButton.dataset.case;
+  const targetData = CASE_DATA[caseKey];
 
-  if (!data) {
-    console.error(`Missing case data for: ${button.dataset.case}`);
+  if (!targetData) {
+    console.error(`Missing data for case: ${caseKey}`);
     return;
   }
 
-  updateTabSelection(button);
-  elements.casePanel.setAttribute('aria-labelledby', button.id);
+  refreshTabStates(targetButton);
+  uiElements.casePanel.setAttribute('aria-labelledby', targetButton.id);
 
-  // フェードアウト → 内容更新 → フェードイン
-  elements.casePanel.style.opacity = '0';
+  // フェードアウト
+  uiElements.casePanel.style.opacity = '0';
 
+  // アニメーション完了後に内容を差し替えてフェードイン
   setTimeout(() => {
-    updateCaseContent(data);
-    elements.casePanel.style.opacity = '1';
-  }, CONFIG.FADE_DURATION_MS);
+    applyCaseDataToView(targetData);
+    uiElements.casePanel.style.opacity = '1';
+  }, APP_CONFIG.FADE_DURATION_MS);
 }
 
 /**
- * キーボードナビゲーション処理
- * 矢印キー、Home、Endキーでタブ間を移動
- * @param {KeyboardEvent} event
- * @param {number} currentIndex - 現在のタブインデックス
+ * キーボード（矢印キーなど）でのタブ移動を処理する
+ * W3Cの「Tabs Design Pattern」に準拠し、アクセシビリティを確保している。
  */
-function handleTabKeyNavigation(event, currentIndex) {
-  const tabCount = elements.caseTabs.length;
+function handleTabKeyboardInput(event, currentIndex) {
+  const totalTabs = uiElements.caseTabs.length;
   let nextIndex;
 
-  switch (event.key) {
-    case 'ArrowRight':
-      nextIndex = (currentIndex + 1) % tabCount;
-      break;
-    case 'ArrowLeft':
-      nextIndex = (currentIndex - 1 + tabCount) % tabCount;
-      break;
-    case 'Home':
-      nextIndex = 0;
-      break;
-    case 'End':
-      nextIndex = tabCount - 1;
-      break;
-    default:
-      return; // 対象外のキーは無視
-  }
+  const keyActions = {
+    'ArrowRight': () => (currentIndex + 1) % totalTabs,
+    'ArrowLeft': () => (currentIndex - 1 + totalTabs) % totalTabs,
+    'Home': () => 0,
+    'End': () => totalTabs - 1
+  };
+
+  const getNextIndex = keyActions[event.key];
+  if (!getNextIndex) return;
 
   event.preventDefault();
-  elements.caseTabs[nextIndex].focus();
-  activateCase(elements.caseTabs[nextIndex]);
+  nextIndex = getNextIndex();
+  
+  const nextTab = uiElements.caseTabs[nextIndex];
+  nextTab.focus();
+  switchActiveCase(nextTab);
 }
 
 /**
- * ケースタブのイベントリスナーを設定
+ * 事例切り替え機能の初期化
  */
-function initCaseTabs() {
-  elements.caseTabs.forEach((button, index) => {
-    button.addEventListener('click', () => activateCase(button));
-    button.addEventListener('keydown', event => handleTabKeyNavigation(event, index));
+function initializeCaseSwitcher() {
+  setupCasePanelTransitions();
+  
+  uiElements.caseTabs.forEach((button, index) => {
+    button.addEventListener('click', () => switchActiveCase(button));
+    button.addEventListener('keydown', event => handleTabKeyboardInput(event, index));
   });
 }
 
 // =============================================================================
-// スクロールアニメーション (Intersection Observer)
+// スクロールアニメーション
 // =============================================================================
 
 /**
- * スクロール時のフェードインアニメーションを初期化
- * .revealクラスを持つ要素がビューポートに入ったら表示
+ * 要素が視界に入ったタイミングで表示するアニメーションを初期化
+ * JSが無効な環境でもコンテンツが見えるよう、初期状態はCSS側で制御している。
  */
-function initScrollAnimations() {
-  const observer = new IntersectionObserver(
+function initializeRevealAnimations() {
+  const revealObserver = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          observer.unobserve(entry.target); // 一度表示したら監視解除
+          // 一度表示した要素は監視を停止し、スクロールの負荷を軽減する
+          revealObserver.unobserve(entry.target);
         }
       });
     },
-    { threshold: CONFIG.INTERSECTION_THRESHOLD }
+    { threshold: APP_CONFIG.INTERSECTION_THRESHOLD }
   );
 
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach(element => revealObserver.observe(element));
 }
-
 
 // =============================================================================
 // 準備度診断フォーム
 // =============================================================================
 
+/**
+ * 診断結果のメッセージを決定する
+ */
+function getReadinessMessage(score) {
+  const { START_ORGANIZING, SMALL_START } = APP_CONFIG.READINESS_LEVELS;
+
+  if (score <= START_ORGANIZING) {
+    return '<strong>いまは「何に困っているか」の整理から始める段階です。</strong> まとまっていなくて構いません。止まっていることをそのまま送っていただければ、一緒に切り分けます。';
+  } 
+  
+  if (score <= SMALL_START) {
+    return '<strong>スポット対応から始めやすい状態です。</strong> 直したい箇所や設定を一つ選んで小さく片づけると、次にやることが見えやすくなります。';
+  }
+
+  return '<strong>改善・導入を進めやすい状態です。</strong> WEB・EC・AIのどこから着手すると効果が出やすいか、進め方と費用を整理してご提案します。';
+}
 
 /**
- * 各質問の回答を合計し、段階に応じたメッセージを表示
+ * 準備度診断フォームの初期化
  */
-function initReadinessForm() {
-  const form = elements.readinessForm;
+function initializeReadinessForm() {
+  const form = uiElements.readinessForm;
   if (!form) return;
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    // q1, q2, q3 それぞれのチェックされている入力を取得
-    const q1 = form.querySelector('input[name="q1"]:checked');
-    const q2 = form.querySelector('input[name="q2"]:checked');
-    const q3 = form.querySelector('input[name="q3"]:checked');
+    // 回答された選択肢を取得
+    const answers = [
+      form.querySelector('input[name="q1"]:checked'),
+      form.querySelector('input[name="q2"]:checked'),
+      form.querySelector('input[name="q3"]:checked')
+    ];
 
-    // すべて回答されているか確認（HTMLのrequired属性でも担保されるが念のため）
-    if (!q1 || !q2 || !q3) return;
+    // 全ての質問への回答があるか確認（HTML5のrequired属性をJSでも補完）
+    if (answers.some(ans => !ans)) return;
 
-    // 合計スコアの計算 (a=2, b=1, c=0)
-    const score = CONFIG.SCORE_MAP[q1.value] + 
-                  CONFIG.SCORE_MAP[q2.value] + 
-                  CONFIG.SCORE_MAP[q3.value];
+    // スコアの合計算出
+    const totalScore = answers.reduce((sum, radio) => {
+      return sum + APP_CONFIG.ANSWER_SCORE_WEIGHTS[radio.value];
+    }, 0);
 
-    // 結果メッセージの決定 (if...else if を使用)
-    let message = '';
-    const { LOW, MEDIUM } = CONFIG.READINESS_SCORE;
-
-    if (score <= LOW) {
-      message = '<strong>いまは「何に困っているか」の整理から始める段階です。</strong> まとまっていなくて構いません。止まっていることをそのまま送っていただければ、一緒に切り分けます。';
-    } else if (score <= MEDIUM) {
-      message = '<strong>スポット対応から始めやすい状態です。</strong> 直したい箇所や設定を一つ選んで小さく片づけると、次にやることが見えやすくなります。';
-    } else {
-      message = '<strong>改善・導入を進めやすい状態です。</strong> WEB・EC・AIのどこから着手すると効果が出やすいか、進め方と費用を整理してご提案します。';
-    }
-
-    // 結果の表示とアニメーション
-    elements.readinessText.innerHTML = message;
+    // 結果表示の更新と視覚効果の適用
+    uiElements.readinessResultText.innerHTML = getReadinessMessage(totalScore);
     
-    // 一度非表示にしてからクラスを付与することで、アニメーションを再トリガーしやすくする
-    elements.readinessResult.classList.remove('is-active');
+    // アニメーションを再発火させるため、一旦クラスを剥がしてリフローを強制する
+    uiElements.readinessResultArea.classList.remove('is-active');
+    void uiElements.readinessResultArea.offsetWidth;
+    uiElements.readinessResultArea.classList.add('is-active');
     
-    // ブラウザのリフローを強制してアニメーションを適用
-    void elements.readinessResult.offsetWidth;
-    
-    elements.readinessResult.classList.add('is-active');
-    
-    // スムーズに結果エリアへスクロール
-    elements.readinessResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // 診断結果が視界に入るよう自動スクロール
+    uiElements.readinessResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 }
 
@@ -300,23 +314,23 @@ function initReadinessForm() {
 // =============================================================================
 
 /**
- * 相談内容を同一サーバーの contact.php へ非同期でPOSTする
- * ページ遷移を伴わず、同じ画面で結果を返す
+ * 問い合わせフォームの非同期送信（AJAX）を初期化
+ * fetch API を使用し、ページ遷移なしでフィードバックを提供することでユーザー体験を向上させている。
  */
-function initContactForm() {
-  const form = elements.contactForm;
+function initializeContactForm() {
+  const form = uiElements.contactForm;
   if (!form) return;
 
-  const button = form.querySelector('button[type="submit"]');
-  const status = form.querySelector('.form-success');
-
-  const FALLBACK_ERROR = '送信できませんでした。お手数ですが、時間をおいて再度お試しください。';
+  const submitButton = form.querySelector('button[type="submit"]');
+  const statusDisplay = form.querySelector('.form-success');
+  const GENERIC_ERROR_MSG = '送信できませんでした。お手数ですが、時間をおいて再度お試しください。';
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    button.disabled = true;
-    status.classList.remove('show', 'is-error');
+    // 多重送信防止
+    submitButton.disabled = true;
+    statusDisplay.classList.remove('show', 'is-error');
 
     try {
       const response = await fetch(form.action, {
@@ -325,24 +339,23 @@ function initContactForm() {
         headers: { 'Accept': 'application/json' }
       });
 
-      // 入力不備などはサーバー側のメッセージをそのまま利用者に見せる
+      // サーバー側（contact.php）からのJSONメッセージを試行的に取得
       const result = await response.json().catch(() => ({}));
 
-      status.textContent = result.message || (response.ok ? '送信しました。' : FALLBACK_ERROR);
+      statusDisplay.textContent = result.message || (response.ok ? '送信しました。' : GENERIC_ERROR_MSG);
 
       if (response.ok) {
         form.reset();
       } else {
-        status.classList.add('is-error');
+        statusDisplay.classList.add('is-error');
       }
     } catch (error) {
-      // 通信自体に失敗した場合 (オフライン等)
-      console.error(error);
-      status.textContent = FALLBACK_ERROR;
-      status.classList.add('is-error');
+      console.error('Contact form submission error:', error);
+      statusDisplay.textContent = GENERIC_ERROR_MSG;
+      statusDisplay.classList.add('is-error');
     } finally {
-      status.classList.add('show');
-      button.disabled = false;
+      statusDisplay.classList.add('show');
+      submitButton.disabled = false;
     }
   });
 }
@@ -352,28 +365,28 @@ function initContactForm() {
 // =============================================================================
 
 /**
- * モバイルナビゲーションのリンククリック時にメニューを閉じる
+ * アンカーリンククリック時に自動でメニューを閉じる
+ * モバイル環境で画面遷移感（ページ内移動）を出すための配慮。
  */
-function initMobileNav() {
-  document.querySelectorAll('.mobile-nav a').forEach(link => {
+function initializeMobileNavBehavior() {
+  uiElements.mobileNavLinks.forEach(link => {
     link.addEventListener('click', () => {
-      const details = link.closest('details');
-      if (details) {
-        details.removeAttribute('open');
+      const detailsElement = link.closest('details');
+      if (detailsElement) {
+        detailsElement.removeAttribute('open');
       }
     });
   });
 }
 
 // =============================================================================
-// 初期化
+// 全体の初期化実行
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  initCasePanel();
-  initCaseTabs();
-  initScrollAnimations();
-  initReadinessForm();
-  initContactForm();
-  initMobileNav();
+  initializeCaseSwitcher();
+  initializeRevealAnimations();
+  initializeReadinessForm();
+  initializeContactForm();
+  initializeMobileNavBehavior();
 });
