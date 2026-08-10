@@ -987,16 +987,18 @@ nav a:hover {
 
 .price-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 15px;
   margin-top: 50px;
 }
 
 .price-card {
   border: 1px solid #43516e;
-  padding: 26px 25px;
+  padding: 26px 22px;
   min-height: 285px;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .price-card::before {
@@ -1007,6 +1009,10 @@ nav a:hover {
   left: -1px;
   height: 4px;
   background: var(--lime);
+}
+
+.price-card.free::before {
+  background: #8edbe4;
 }
 
 .price-card.featured::before {
@@ -1051,19 +1057,43 @@ nav a:hover {
   margin: 0;
 }
 
+/* 最低料金であることの明示（固定価格ではない） */
+.price-min {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #8edbe4;
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.price-sub {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #93a4b8;
+  margin: 6px 0 0;
+}
+
+.featured .price-min {
+  color: #125d70;
+}
+
+.featured .price-sub {
+  color: #17515f;
+}
+
 .price small {
   font: 500 13px var(--display);
   letter-spacing: 0;
 }
 
-.price-card > p:not(.plan-label):not(.price) {
+.price-card > p:not(.plan-label):not(.price):not(.price-min):not(.price-sub) {
   font-size: 13px;
   color: #c2d1db;
   line-height: 1.85;
   margin: 14px 0;
 }
 
-.featured > p:not(.plan-label):not(.price) {
+.featured > p:not(.plan-label):not(.price):not(.price-min):not(.price-sub) {
   color: #174e5e;
 }
 
@@ -1082,6 +1112,61 @@ nav a:hover {
 
 .price-card a span {
   margin-left: 12px;
+}
+
+.price-card ul {
+  margin: auto 0 0;
+  padding: 16px 0 0;
+  list-style: none;
+  border-top: 1px solid #43516e;
+  color: #c2d1db;
+  font-size: 12.5px;
+  line-height: 1.85;
+}
+
+.price-card li + li {
+  margin-top: 7px;
+}
+
+.price-card li::before {
+  content: '→';
+  margin-right: 7px;
+  color: #73d9e4;
+}
+
+.featured ul {
+  border-top-color: #2a9dab;
+  color: #12414f;
+}
+
+.featured li::before {
+  color: #11264b;
+}
+
+/* 料金の目安 */
+.price-note {
+  margin-top: 26px;
+  border: 1px solid #43516e;
+  padding: 26px 28px;
+}
+
+.price-note-title {
+  font: 500 12px var(--mono);
+  letter-spacing: 0.08em;
+  color: #8edbe4;
+  margin: 0 0 14px;
+}
+
+.price-note-lead {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.9;
+  color: #c2d1db;
+  max-width: 62em;
+}
+
+.price-note .button {
+  margin-top: 4px;
 }
 
 /* ==========================================================================
@@ -1412,6 +1497,13 @@ footer {
    16. レスポンシブデザイン
    ========================================================================== */
 
+/* 料金カード4枚: 中間幅では2列に折り返す（800px以下の1列指定より前に置く） */
+@media (max-width: 1100px) {
+  .price-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* タブレット・小型デスクトップ */
 @media (max-width: 800px) {
   .site-header {
@@ -1497,6 +1589,10 @@ footer {
   .service-grid,
   .price-grid {
     grid-template-columns: 1fr;
+  }
+
+  .price-note {
+    padding: 22px 20px;
   }
 
   .service-card {
@@ -1922,6 +2018,251 @@ footer {
 
 .article-cta .button {
   margin-top: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   料金表ページ (pricing.html)
+   -------------------------------------------------------------------------- */
+
+.rate-page {
+  max-width: 1040px;
+}
+
+/* 無料相談の強調ブロック */
+.rate-callout {
+  background: #e5f4f6;
+  border-left: 4px solid #1eb0c3;
+  padding: 24px 28px;
+  margin: 40px 0 46px;
+}
+
+.rate-callout-price {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rate-callout-price b {
+  font: 700 26px/1 var(--mono);
+  letter-spacing: -0.06em;
+  color: #11153f;
+  margin-left: 8px;
+}
+
+.rate-callout p:not(.rate-callout-price) {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.95;
+  color: #3f5a63;
+}
+
+/* 目次 */
+.rate-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 56px;
+}
+
+.rate-jump a {
+  border: 1px solid var(--line);
+  padding: 9px 16px;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.rate-jump a:hover,
+.rate-jump a:focus-visible {
+  border-color: #1eb0c3;
+  color: #147d8c;
+}
+
+.rate-section {
+  margin-bottom: 58px;
+  scroll-margin-top: 96px;
+}
+
+.rate-section h2 {
+  font-size: 25px;
+  letter-spacing: -0.05em;
+  margin: 0 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #11153f;
+}
+
+/* 料金テーブル */
+.rate-table-wrap {
+  overflow-x: auto;
+}
+
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 560px;
+}
+
+.rate-table thead th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #11153f;
+  padding: 11px 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rate-table tbody th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.rate-table tbody th,
+.rate-table tbody td {
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.rate-table tbody tr:nth-child(even) {
+  background: #f4f8f9;
+}
+
+.rate-table tbody td:first-of-type {
+  white-space: nowrap;
+}
+
+.rate-table b {
+  font: 700 16px/1.5 var(--mono);
+  letter-spacing: -0.05em;
+  color: #11153f;
+}
+
+.rate-table tbody td:last-child {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+  min-width: 200px;
+}
+
+/* お見積りの前提 */
+.rate-terms {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rate-terms li {
+  position: relative;
+  padding: 0 0 14px 24px;
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: #3f5a63;
+}
+
+.rate-terms li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  background: #1eb0c3;
+}
+
+.rate-terms b {
+  color: var(--ink);
+}
+
+@media (max-width: 800px) {
+  .rate-callout {
+    padding: 20px 20px;
+    margin: 32px 0 38px;
+  }
+
+  .rate-jump {
+    margin-bottom: 42px;
+  }
+
+  .rate-section h2 {
+    font-size: 22px;
+  }
+
+  .rate-table-wrap {
+    /* 3列が入りきらない幅では横スクロールさせる（本文は縦積みのまま） */
+    margin-right: calc(-1 * max(22px, env(safe-area-inset-right)));
+    padding-right: max(22px, env(safe-area-inset-right));
+  }
+}
+
+/* スマートフォン: 3列テーブルを1件ずつのカードに積み替える */
+@media (max-width: 600px) {
+  .rate-table-wrap {
+    overflow-x: visible;
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .rate-table {
+    min-width: 0;
+  }
+
+  .rate-table thead {
+    display: none;
+  }
+
+  .rate-table,
+  .rate-table tbody,
+  .rate-table tr,
+  .rate-table tbody th,
+  .rate-table tbody td {
+    display: block;
+    width: 100%;
+  }
+
+  .rate-table tr {
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+
+  .rate-table tbody tr:nth-child(even) {
+    background: #f4f8f9;
+  }
+
+  .rate-table tbody th,
+  .rate-table tbody td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .rate-table tbody th {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .rate-table tbody td:first-of-type {
+    white-space: normal;
+    margin-bottom: 8px;
+  }
+
+  .rate-table tbody td:last-child {
+    min-width: 0;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .rate-table tbody td:last-child::before {
+    content: '金額が変わる要素：';
+    color: #147d8c;
+    font-weight: 700;
+  }
 }
 
 .legal-page {
