@@ -12,10 +12,12 @@
 3. `docs/design-refresh/PROGRESS.md` — 完了ログと申し送り
 4. `docs/design-refresh/phase-N-*.md` — その回の作業指示
 
-**現在: Phase 1 完了（ローカル変更・未コミット）。次は Phase 6（guide.html 強化）。**
-PROGRESS.md末尾の「Phase 1 事前検証メモ」は、Phase 1着手前に作成した履歴。アイコンを再生成する場合のみ参照すること。
+**現在: Phase 0・1・2・3・5・6・7は完了。Phase 4（運営者セクション）はユーザー判断により見送り。**
+次のデザイン変更は、共通制約を読んだうえで、既存の計画書を歴史的な判断材料として扱う。
+現行の状態は `PROGRESS.md` を正とする。末尾の「Phase 1 事前検証メモ」は、アイコンを再生成する場合のみ参照すること。
 
-推奨実行順は `0 → 1 → 6 → 2 → 3 → 4 → 5 → 7`（Phase 6 のOGPが旧ブランドのままで緊急度が高い）。
+通常の更新・本番配信・復旧は、リポジトリ直下の `README.md` と
+`docs/operations/deployment-and-recovery.md` を読むこと。
 
 ## 絶対に守ること
 
