@@ -1,0 +1,17 @@
+{
+  "name": "デジタル担当室 | 誠幸（セイコウ）",
+  "short_name": "デジタル担当室",
+  "description": "小規模事業者・個人事業主のための外部デジタル担当。WEB・EC・AIをまとめてご相談いただけます。",
+  "lang": "ja",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#11153f",
+  "icons": [
+    { "src": "/icon-192.png?v=20260809.2", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png?v=20260809.2", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png?v=20260809.2", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png?v=20260809.2", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

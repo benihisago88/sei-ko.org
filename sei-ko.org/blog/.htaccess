@@ -1,0 +1,55 @@
+# ============================================================
+# このファイルの目的
+# ------------------------------------------------------------
+# ルートの .htaccess（サイトルート public_html/sei-ko.org/.htaccess）は
+# mod_headers で厳格な Content-Security-Policy を "Header always set" で
+# 送出している。この設定はサブディレクトリにも継承されるため、
+# /blog/ に設置する WordPress の管理画面（wp-admin）で多用される
+# インライン <script> / <style> がそのままではブロックされ、
+# 管理画面が正常に動作しなくなる。
+#
+# そこで /blog/ 配下でのみ、継承された CSP ヘッダーを解除する。
+#
+# 設置先
+# ------------------------------------------------------------
+#   public_html/sei-ko.org/blog/.htaccess
+#
+# WordPress インストール後、このファイルの内容を上記パスの
+# .htaccess の "先頭" に追記して設置すること。
+#
+# 重要: WordPress は自身のパーマリンク設定を保存する際、
+#   # BEGIN WordPress
+#   ...
+#   # END WordPress
+# というブロックを .htaccess に自動生成・上書きする。
+# このブロックの "外側（上）" に本ファイルの内容を置くこと。
+# ブロックの内側に置いてしまうと、WordPress の更新・設定変更時に
+# 消されてしまう。
+#
+# www への集約について
+# ------------------------------------------------------------
+# サイトルートの .htaccess にも apex → www の 301 があるが、
+# Apache の mod_rewrite は子ディレクトリの .htaccess で
+# RewriteEngine On が宣言されると親のルールを継承しない。
+# WordPress がパーマリンク設定時に自動生成する .htaccess には
+# RewriteEngine On が含まれるため、/blog/ 配下だけ www 集約が
+# 外れてしまう。それを防ぐため同じルールをここにも持たせる。
+#
+# 注意
+# ------------------------------------------------------------
+# ルートの .htaccess の Content-Security-Policy を変更した場合は、
+# このファイルの前提（何を unset すべきか）も見直すこと。
+# ============================================================
+
+<IfModule mod_headers.c>
+  Header always unset Content-Security-Policy
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^sei-ko\.org$ [NC]
+  RewriteRule ^(.*)$ https://www.sei-ko.org/blog/$1 [R=301,L]
+</IfModule>
+
+# ここから下（または別途）に WordPress の
+# # BEGIN WordPress ... # END WordPress ブロックが追加される
