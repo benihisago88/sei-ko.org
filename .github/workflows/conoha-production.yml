@@ -1,0 +1,59 @@
+name: ConoHa production deploy
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.htaccess'
+      - '*.avif'
+      - '*.css'
+      - '*.gif'
+      - '*.htm'
+      - '*.html'
+      - '*.ico'
+      - '*.jpeg'
+      - '*.jpg'
+      - '*.js'
+      - '*.php'
+      - '*.png'
+      - '*.svg'
+      - '*.txt'
+      - '*.webmanifest'
+      - '*.webp'
+      - '*.xml'
+      - 'assets/**'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'true は差分確認のみ。false は安全な本番更新を実行します。'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # 初回は手動ドライランで検証する。検証後にリポジトリ変数を true にすると、
+    # master の公開対象変更ごとに自動デプロイされる。
+    if: github.event_name == 'workflow_dispatch' || vars.CONOHA_AUTO_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: conoha-production
+      url: https://www.sei-ko.org/
+    concurrency:
+      group: conoha-production
+      cancel-in-progress: false
+    steps:
+      - name: ソースを取得
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: ConoHaへ安全に同期
+        env:
+          CONOHA_FTP_HOST: ${{ secrets.CONOHA_FTP_HOST }}
+          CONOHA_FTP_USERNAME: ${{ secrets.CONOHA_FTP_USERNAME }}
+          CONOHA_FTP_PASSWORD: ${{ secrets.CONOHA_FTP_PASSWORD }}
+          CONOHA_FTP_REMOTE_DIR: ${{ secrets.CONOHA_FTP_REMOTE_DIR }}
+          DEPLOY_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: python3 .github/scripts/deploy_conoha.py
