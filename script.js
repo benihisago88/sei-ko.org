@@ -328,6 +328,15 @@ function initializeContactForm() {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    // Netlify は PHP を実行しないため、確認環境からの送信を防止する。
+    // ConoHa 本番では従来どおり同一オリジンの contact.php へ送信する。
+    if (window.location.hostname.endsWith('.netlify.app')) {
+      statusDisplay.textContent = 'このNetlifyプレビューではお問い合わせを送信できません。本番サイトから送信してください。';
+      statusDisplay.classList.remove('show');
+      statusDisplay.classList.add('is-error', 'show');
+      return;
+    }
+
     // 多重送信防止
     submitButton.disabled = true;
     statusDisplay.classList.remove('show', 'is-error');
