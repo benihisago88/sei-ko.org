@@ -13,6 +13,7 @@
 | 本番配信・秘密情報・障害対応 | [運用手順](docs/operations/deployment-and-recovery.md) |
 | デザイン刷新の履歴・制約 | [design-refresh の案内](docs/design-refresh/README.md) と [進捗](docs/design-refresh/PROGRESS.md) |
 | お問い合わせ内容をGoogle Sheetsへ控える設定 | [tools/README.md](tools/README.md) |
+| GitHub Copilotにこのリポジトリを保守させる | [Codex Sei-ko Maintainer](.github/agents/sei-ko-maintainer.agent.md) を選ぶ |
 
 ## 構成
 
