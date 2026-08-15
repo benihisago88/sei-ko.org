@@ -30,6 +30,7 @@
   --pine: #11153f;
   --mint: #e7f8fa;
   --lime: #35bfd2;
+  --accent-strong: #0d7485;
   --cream: #fff;
   --sand: #f4f8f9;
   --line: #dce6e8;
@@ -156,12 +157,12 @@ h1, h2, h3, h4, h5, h6, p, legend, summary, blockquote {
 }
 
 .brand-dot {
-  color: #1faec3;
+  color: var(--accent-strong);
 }
 
 .brand-owner {
   margin-top: 3px;
-  color: #6d7b80;
+  color: var(--muted);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -182,7 +183,7 @@ nav a {
 }
 
 nav a:hover {
-  color: #137451;
+  color: var(--accent-strong);
 }
 
 /* ヘッダーCTAボタン */
@@ -190,7 +191,7 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 11px;
-  background: #36b9d0;
+  background: var(--accent-strong);
   color: white;
   text-decoration: none;
   border-radius: 999px;
@@ -227,7 +228,7 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #198ca0;
+  color: var(--accent-strong);
   font: 500 12px/1.2 var(--mono);
   letter-spacing: 0.11em;
   font-weight: 700;
@@ -271,7 +272,7 @@ nav a:hover {
 .hero h1 em {
   display: inline;
   color: #fff;
-  background: #55c3cf;
+  background: var(--accent-strong);
   padding: 0 0.17em 0.06em;
   font-style: normal;
   box-decoration-break: clone;
@@ -316,7 +317,7 @@ nav a:hover {
 }
 
 .button.primary {
-  background: #33b8cf;
+  background: var(--accent-strong);
   color: white;
 }
 
@@ -334,7 +335,7 @@ nav a:hover {
 }
 
 .button.ghost span {
-  color: #2fb1c7;
+  color: var(--accent-strong);
 }
 
 /* テキストリンク */
@@ -347,7 +348,7 @@ nav a:hover {
 }
 
 .text-link span {
-  color: #2fb1c7;
+  color: var(--accent-strong);
   margin-left: 5px;
 }
 
@@ -370,7 +371,7 @@ nav a:hover {
 }
 
 .trust-row strong {
-  color: #1da4b8;
+  color: var(--accent-strong);
   font: 500 17px/1 var(--mono);
   letter-spacing: -0.08em;
 }
@@ -425,7 +426,7 @@ nav a:hover {
 }
 
 .problem-grid .eyebrow {
-  color: #1991a5;
+  color: var(--accent-strong);
 }
 
 .problem-grid h2 {
@@ -450,7 +451,7 @@ nav a:hover {
 
 .problem-list span {
   font: 12px var(--mono);
-  color: #1fa4ba;
+  color: var(--accent-strong);
   margin-right: 12px;
 }
 
@@ -539,7 +540,7 @@ nav a:hover {
   font: 500 12px var(--mono);
   letter-spacing: 0.07em;
   margin: 0;
-  color: #20a1b3;
+  color: var(--accent-strong);
 }
 
 .service-icon {
@@ -550,7 +551,7 @@ nav a:hover {
   place-items: center;
   border: 1px solid #9edbe2;
   border-radius: 50%;
-  color: #1fa6ba;
+  color: var(--accent-strong);
 }
 
 /* アイコンSVGのサイズはここで制御する（SVG側に width/height を書かない） */
@@ -587,7 +588,7 @@ nav a:hover {
 .service-card li:before {
   content: '→';
   margin-right: 7px;
-  color: #1eb0c3;
+  color: var(--accent-strong);
 }
 
 /* ==========================================================================
@@ -660,7 +661,7 @@ nav a:hover {
 }
 
 .readiness-form .button.primary {
-  background: #44c4d2;
+  background: var(--accent-strong);
   margin-top: 11px;
 }
 
@@ -684,7 +685,7 @@ nav a:hover {
 }
 
 .readiness-result strong {
-  color: #157e92;
+  color: var(--accent-strong);
 }
 
 /* ==========================================================================
@@ -735,7 +736,7 @@ nav a:hover {
 }
 
 .case-tabs button.active {
-  color: #168b9f;
+  color: var(--accent-strong);
 }
 
 .case-tabs button.active:after {
@@ -774,7 +775,7 @@ nav a:hover {
 .visual-tag {
   font: 500 12px var(--mono);
   letter-spacing: 0.08em;
-  color: #18889b;
+  color: var(--accent-strong);
   margin: 0;
 }
 
@@ -819,7 +820,7 @@ nav a:hover {
 .case-type {
   font: 500 12px var(--mono);
   letter-spacing: 0.07em;
-  color: #18889b;
+  color: var(--accent-strong);
   margin: 0;
 }
 
@@ -832,7 +833,7 @@ nav a:hover {
 }
 
 .case-content h3 span {
-  color: #1a9db1;
+  color: var(--accent-strong);
   font-family: var(--mono);
 }
 
@@ -858,7 +859,7 @@ nav a:hover {
 
 .case-result strong {
   font: 500 30px/1 var(--mono);
-  color: #159bb1;
+  color: var(--accent-strong);
 }
 
 .case-result span {
@@ -918,7 +919,7 @@ nav a:hover {
   display: grid;
   place-items: center;
   background: #d9f3f5;
-  color: #168ca0;
+  color: var(--accent-strong);
   font: 12px var(--mono);
 }
 
@@ -926,7 +927,7 @@ nav a:hover {
   width: 24px;
   height: 24px;
   margin-top: 2px;
-  color: #168ca0;
+  color: var(--accent-strong);
 }
 
 .timeline h3 {
@@ -1166,7 +1167,7 @@ nav a:hover {
 
 .contact h2 em {
   font-style: normal;
-  color: #159bb0;
+  color: var(--accent-strong);
 }
 
 .contact > div > div > p:last-child {
@@ -1209,7 +1210,7 @@ nav a:hover {
   padding: 10px 11px;
   color: var(--ink);
   font: 16px var(--display);
-  outline-color: #4ba87d;
+  outline-color: var(--accent-strong);
 }
 
 .contact-form button {
@@ -1226,7 +1227,7 @@ nav a:hover {
 }
 
 .form-note a {
-  color: #176f82;
+  color: var(--accent-strong);
 }
 
 .form-success {
@@ -1676,7 +1677,7 @@ footer {
     margin-top: 8px;
     border: 0;
     border-radius: 999px;
-    background: #36b9d0;
+    background: var(--accent-strong);
     color: #fff;
   }
 
@@ -1853,7 +1854,7 @@ footer {
 .article-flow {
   max-width: 320px;
   margin: 32px auto;
-  color: #1fa6ba;
+  color: var(--accent-strong);
 }
 
 .article-flow svg {
@@ -1909,6 +1910,10 @@ footer {
   color: white;
 }
 
+.article-cta .eyebrow {
+  color: var(--lime);
+}
+
 .article-cta h2 {
   font-size: 29px;
   letter-spacing: -0.05em;
@@ -1946,12 +1951,12 @@ footer {
 }
 
 .legal-page a {
-  color: #18899d;
+  color: var(--accent-strong);
 }
 
 .legal-date {
   margin-top: 55px;
-  color: #84918b !important;
+  color: var(--muted) !important;
   font-size: 13px !important;
 }
 
@@ -2087,7 +2092,7 @@ footer {
 }
 
 .breadcrumb a {
-  color: #35bfd2;
+  color: var(--accent-strong);
   text-decoration: none;
   transition: color 0.2s ease;
 }
