@@ -7,3 +7,6 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# GitHub Actions のデプロイスクリプトをローカル検証したときのPythonキャッシュ
+__pycache__/

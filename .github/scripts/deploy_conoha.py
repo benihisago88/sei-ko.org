@@ -203,6 +203,9 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (RuntimeError, subprocess.CalledProcessError, ftplib.all_errors, OSError) as error:
+    except (RuntimeError, subprocess.CalledProcessError, OSError) as error:
+        print(f"デプロイを中止しました: {error}", file=sys.stderr)
+        raise SystemExit(1)
+    except ftplib.all_errors as error:
         print(f"デプロイを中止しました: {error}", file=sys.stderr)
         raise SystemExit(1)
